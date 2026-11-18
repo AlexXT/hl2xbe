@@ -105,3 +105,18 @@ the handoff fails after the intro.
 A pure-Python LZX decoder from `sp00nznet/360tools` was also tried, but its
 XEX2 block framing does not match the xCmp payload; the recompiled loader is
 both more faithful and less work.
+
+## Level-load frontier
+
+With content staged, the game reaches the menu and `NEW GAME` loads the intro
+map to ~97–99%. The remaining failure is not a missing symbol: the XDK's own
+`CreateDevice` initialises a *miniport* object at `device+0x1C28` that HLE
+replaced. Mirroring a zeroed block fixed the first null dereference in the
+material-setup helper (`sub_006179C7`); presenting its status bit as ready
+moved the stall deeper.
+
+The guest now spins in miniport status-polling loops (`0x618250`, `0x618290`)
+waiting for NV2A-style bits that no hardware here changes. That is the honest
+frontier: it needs real GPU-status emulation or a host hook that advances those
+fields, not another config address. Everything up to this point is committed
+and reproducible.
