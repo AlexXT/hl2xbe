@@ -1,0 +1,27 @@
+# The hand kept entries for hl2_xbox.xbe.
+#
+# config/game.toml is the scan output: xbe_symbols writes it on every first
+# build, so it is never edited. This file includes it and adds what the scan
+# could not prove; entries here are read after the include and win over it.
+includes = ["game.toml"]
+
+# Argument locations in API order for functions whose image convention differs
+# from the one the host declares. A register name, or "stack" for the next
+# stack slot, which the callee pops. These are the locations the scan measured
+# at each function's entry, in API argument order.
+[abi]
+# The host declares a two-argument fastcall (ecx, edx); this LTCG build passes
+# the second argument in ebx and pops no stack bytes.
+CDevice_KickOff = ["ecx", "ebx"]
+
+# Two-argument stdcalls in the XDK, but this image takes the arguments in
+# registers instead of on the stack.
+D3DDevice_SelectVertexShader = ["eax", "ebx"]
+D3DDevice_SetTransform        = ["eax", "edx"]
+
+# Two-argument stdcall: the first argument is in eax, the second on the stack
+# (one slot, four bytes popped by the callee).
+D3D_BlockOnTime = ["eax", "stack"]
+
+# One-argument stdcall: the resource is passed in esi instead of on the stack.
+D3D_InternalRelease = ["esi"]

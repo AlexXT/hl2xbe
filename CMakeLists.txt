@@ -50,7 +50,9 @@ endif()
 
 # target name = GAME_EXE in build.bat, xbe = GAME_XBE
 # The disc's game XBE (default.xbe is the loader, not the engine).
-add_xbe_image(Game hl2_xbox.xbe game.toml ${GAME_PARTITIONS} game)
+# game_hand.toml includes the generated game.toml and adds the hand-proven
+# ABI entries the LTCG libraries need.
+add_xbe_image(Game hl2_xbox.xbe game_hand.toml ${GAME_PARTITIONS} game)
 
 # launcher/icon.ico, when there is one: the game's icon too (resource 1, which the window class loads)
 if(WIN32 AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/launcher/icon.ico)

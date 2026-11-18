@@ -97,6 +97,9 @@ call "%VSDIR%\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64 >nul
 set "VSCMAKE=%VSDIR%\Common7\IDE\CommonExtensions\Microsoft\CMake"
 set "PATH=%VSCMAKE%\CMake\bin;%VSCMAKE%\Ninja;%VSDIR%\VC\Tools\Llvm\x64\bin;%PATH%"
 if exist "%ProgramFiles%\LLVM\bin\clang++.exe" set "PATH=%ProgramFiles%\LLVM\bin;%PATH%"
+rem The LLVM20 install is the one that links this toolkit correctly; the other
+rem 20.1.5 install leaves _mm_* intrinsics undefined in xbe_recomp.exe.
+if exist "C:\Program Files\LLVM20\bin\clang++.exe" set "PATH=C:\Program Files\LLVM20\bin;%PATH%"
 where clang++ >nul 2>nul || set MISSING=%MISSING% clang++
 where cmake   >nul 2>nul || set MISSING=%MISSING% cmake
 where ninja   >nul 2>nul || set MISSING=%MISSING% ninja
