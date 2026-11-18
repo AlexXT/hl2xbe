@@ -48,3 +48,14 @@ D3D_RenderState           = 0x0061EDF8
 D3D_DeferredTextureState  = 0x0061C730
 D3D_Streams               = 0x0061FDB8
 D3D_SimpleRenderStateEncode = 0x00772FB8
+
+# The default FVF vertex shader object: 0x613AC1 does
+#   mov dword ptr [ebp+0x794], 0x61FCA0
+# where +0x794 is CDevice_VertexShader. CreateDevice mirrors this into the
+# device; with the symbol missing the host wrote 0 and the guest faulted
+# reading [0+4] in sub_0060C660.
+D3D_FvfShader = 0x0061FCA0
+
+# Index data base for inline draws: 0x60FCB4/0x60FCCB read 0x61EDEC, and
+# 0x60FCBC lazily allocates it through the kernel if still zero.
+D3D_IndexData = 0x0061EDEC
