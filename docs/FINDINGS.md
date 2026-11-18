@@ -166,3 +166,22 @@ It is dormant on the normal retail boot (no `-dev`, and the title takes the
 empty command line), so it needs no hook here. The Halo 2 console code in the
 shared SDK is already compiled out for HL2 by the `HAS_console_*` guards and
 can be removed from that SDK later without touching this project.
+
+### Routing the F1 Console page into HL2
+
+The SDK's F1 overlay Console page queues commands through `app::TakeConsoleCommand`.
+HL2's command buffer was found by following the XBE string
+`"Cbuf_AddText: buffer overflow"` to `sub_0035DC90` (`0x0035DC90`): it takes the
+command string in **ECX**, has no stack arguments, and copies into the buffer at
+`[0x008CC87C]`; `Cbuf_Execute` later runs the queued text each frame.
+
+Hook `0x0040ED10` (top of `CModAppSystemGroup::Main`'s frame loop) drains the
+overlay queue, allocates a guest string, sets `ECX` and calls `Cbuf_AddText`
+through `kernel::CallGuest` (which restores registers). `XBE_CONSOLE_CMD` seeds
+one command at startup for headless verification: with `XBE_CONSOLE_CMD="map intro"`
+the log shows `intro.bsp` opening at 1.5 s. HL2's own console UI is not opened —
+commands simply execute — but the F1 page is now a working command launcher.
+
+Earlier candidates (`0x001E226F`, `0x001ABBFD`) were rejected: the former takes
+an object pointer, the latter is a different helper. The string-reference trace
+was what found the real entry point.

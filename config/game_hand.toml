@@ -71,3 +71,8 @@ call = "EmulateMiniportReady"
 [[hook]]
 at = 0x00617EE0
 call = "ClearMiniportStatus"
+# Route the F1 overlay's Console page into HL2's command buffer. 0x40ED10 is
+# the top of CModAppSystemGroup::Main's frame loop.
+[[hook]]
+at = 0x0040ED10
+call = "HL2ConsoleTick"
