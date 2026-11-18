@@ -121,11 +121,27 @@ frontier: it needs real GPU-status emulation or a host hook that advances those
 fields, not another config address. Everything up to this point is committed
 and reproducible.
 
-xemu was checked for guidance: its NV2A model is a set of MMIO register blocks
-(`PGRAPH` at `0x400000`, `PCRTC` at `0x600000`, etc.) with interrupt/pending
-bits, whereas this guest polls XDK-side shadow words inside the miniport.
-There is no direct offset mapping, so guessing bits from the register names
-does not work — four speculative status writes (one-shot, per-swap and a
-host thread) were tried and reverted. The correct next step is dynamic:
-find the exact guest address being polled (a watchpoint or a sampled EIP),
-then mirror that field with a host hook.
+### Solved: emulate the miniport's MMIO side effects
+
+xemu models NV2A as MMIO register blocks (`PGRAPH` at `0x400000`, `PCRTC` at
+`0x600000`, etc.) with interrupt/pending bits, but this guest polls *XDK-side
+shadow words* in the miniport — there is no direct offset mapping. Guessing
+status bits from xemu register names did not work; four such attempts were
+reverted.
+
+What worked was dynamic: one-shot `[[hook]]` probes on candidate loop heads
+showed the guest reaching only `0x6179CA`, then `0x617A10`, then stalling in
+`sub_00617E30`. Reading the tested words from the hook gave the exact
+conditions:
+
+| Hook | Emulated side effect |
+|---|---|
+| `0x6179CA` | set bits `0x10` at `miniport+0x3214` and `+0x2400`, clear it at `+0x3220` — the loop's exit condition |
+| `0x617EE0` | the guest writes `miniport+0x600100` (an NV2A-style clear register) and waits for bit `0x1000000` at `+0x100` to drop; mirror that write by clearing the bit |
+
+The first probe accidentally logged every loop iteration and produced a 3.5 GB
+log; it was replaced with one-shot logging and the logs removed.
+
+With those two hooks the guest leaves the polling loop, `NEW GAME` completes
+its load and the game runs. `docs/SOURCES.md` still describes the reference
+toolkits; this file is the record of what was actually recovered.
