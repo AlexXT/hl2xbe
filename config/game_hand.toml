@@ -56,6 +56,7 @@ D3D_SimpleRenderStateEncode = 0x00772FB8
 # reading [0+4] in sub_0060C660.
 D3D_FvfShader = 0x0061FCA0
 
-# Index data base for inline draws: 0x60FCB4/0x60FCCB read 0x61EDEC, and
-# 0x60FCBC lazily allocates it through the kernel if still zero.
-D3D_IndexData = 0x0061EDEC
+# Index data base for inline draws. 0x60B820 is D3DDevice_SetIndices: it adds
+# 0x80000 to the buffer pointer, reads +4 and stores the data pointer in
+# 0x61FC98; the game's draw loop at 0x45275D reads that same global.
+D3D_IndexData = 0x0061FC98
