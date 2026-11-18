@@ -1,0 +1,53 @@
+# build
+/out/
+/build/
+*.zip
+*.pdb
+*.exe
+*.obj
+*.o
+
+# recompiled code, derived from the game
+/generated/
+
+# xbe_symbols rewrites this from the XBE on the first build
+/config/game.toml
+
+# user's own game files
+/assets/
+*.iso
+*.xbe
+*.xz_
+*.xzp
+*.bsp
+
+# runtime files
+settings.toml
+/logs/
+/hdd/
+/CrashDumps/
+
+# editors
+.vs/
+.vscode/
+.idea/
+
+# Local temporary folder
+.local
+
+# reference checkouts (hl2-recomp tools, Source SDK 2013) and scratch output
+/ref/
+work_*.txt
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# harness frame captures (game imagery)
+/captures/
+/screenshots/
+
+# local run logs and cached pipeline state
+*.log
+run.*.txt
+*.bin

@@ -1,0 +1,10 @@
+{
+    "title": "Half-Life 2 (Xbox)",
+    "short": "HL2",
+    "exe": "hl2xbe",
+    "xbe": "hl2_xbox.xbe",
+    "releases": {},
+    "repo": "https://github.com/AlexXT/hl2xbe.git",
+    "branch": "main",
+    "toolchain": "https://raw.githubusercontent.com/AlexXT/hl2xbe/main/launcher/toolchain.json"
+}
