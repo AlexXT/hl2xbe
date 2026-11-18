@@ -1,6 +1,9 @@
 #include "app/app.h"
 
 static void Init() {
+    // Retail Xbox HL2 has no console window (VXConsole is an external debugger);
+    // the F1 page shows captured engine output instead of a dead "Open display".
+    app::SetConsoleDisplaySupported(false);
     app::SetConsoleQuickCommands({
         {"cheats on", "sv_cheats 1"},
         {"impulse 101", "impulse 101"},

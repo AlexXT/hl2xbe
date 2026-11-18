@@ -51,11 +51,20 @@ static void RunCommand(X86Context& ctx, uint8_t* base, const std::string& cmd) {
 
 // F1 overlay Console page -> HL2's command buffer, driven from the top of
 // CModAppSystemGroup::Main's frame loop (0x40ED10).
+void TraceMsg(X86Context& ctx, uint8_t* base) {
+    uint32_t p = *reinterpret_cast<const uint32_t*>(base + ctx.esp + 12);
+    if (!p || !mem::IsCommitted(p)) return;
+    const char* s = reinterpret_cast<const char*>(base + p);
+    std::string line(s);
+    while (!line.empty() && (line.back() == ' ' || line.back() == '\n' || line.back() == '\r')) line.pop_back();
+    if (!line.empty()) app::AddConsoleLine(line);
+}
 void HL2ConsoleTick(X86Context& ctx, uint8_t* base) {
     static bool from_env = false;
     if (!from_env) {
         from_env = true;
         if (const char* e = std::getenv("XBE_CONSOLE_CMD")) RunCommand(ctx, base, e);
+        if (std::getenv("XBE_CONSOLE_OPEN")) RunCommand(ctx, base, "toggleconsole");
     }
     std::string cmd;
     while (app::TakeConsoleCommand(cmd)) RunCommand(ctx, base, cmd);
