@@ -8,8 +8,9 @@ into the gitignored `ref/` folder, so nothing derived from them is vendored
 here:
 
 ```
-ref/hl2-recomp/     https://github.com/sp00nznet/hl2-recomp
-ref/xboxrecomp/     https://github.com/sp00nznet/xboxrecomp
+ref/hl2-recomp/       https://github.com/sp00nznet/hl2-recomp
+ref/xboxrecomp/       https://github.com/sp00nznet/xboxrecomp
+ref/source-sdk-2013/  https://github.com/ValveSoftware/source-sdk-2013
 ```
 
 To recreate them:
@@ -17,7 +18,10 @@ To recreate them:
 ```powershell
 git clone --depth 1 https://github.com/sp00nznet/hl2-recomp.git  ref/hl2-recomp
 git clone --depth 1 https://github.com/sp00nznet/xboxrecomp.git  ref/xboxrecomp
+git clone --depth 1 https://github.com/ValveSoftware/source-sdk-2013.git ref/source-sdk-2013
 ```
+
+How each reference should be used is written up in `docs/SOURCES.md`.
 
 What each is for:
 
