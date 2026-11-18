@@ -120,3 +120,12 @@ waiting for NV2A-style bits that no hardware here changes. That is the honest
 frontier: it needs real GPU-status emulation or a host hook that advances those
 fields, not another config address. Everything up to this point is committed
 and reproducible.
+
+xemu was checked for guidance: its NV2A model is a set of MMIO register blocks
+(`PGRAPH` at `0x400000`, `PCRTC` at `0x600000`, etc.) with interrupt/pending
+bits, whereas this guest polls XDK-side shadow words inside the miniport.
+There is no direct offset mapping, so guessing bits from the register names
+does not work — four speculative status writes (one-shot, per-swap and a
+host thread) were tried and reverted. The correct next step is dynamic:
+find the exact guest address being polled (a watchpoint or a sampled EIP),
+then mirror that field with a host hook.
