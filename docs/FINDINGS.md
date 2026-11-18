@@ -145,3 +145,24 @@ log; it was replaced with one-shot logging and the logs removed.
 With those two hooks the guest leaves the polling loop, `NEW GAME` completes
 its load and the game runs. `docs/SOURCES.md` still describes the reference
 toolkits; this file is the record of what was actually recovered.
+
+## Xbox console leftovers in the retail HL2 build
+
+Unlike Halo 2's *in-game* developer console (which the shared SDK bridges),
+HL2's leftover is an **external debugger console, VXConsole**. It is visible in
+both the binary and the public SDK headers:
+
+- `hl2_xbox.xbe` strings: `-novxconsole`, `Waiting For VXConsole Connection...`,
+  `XBX_InitDebug: failed to register command processor`,
+  `XBX_SendRemoteCommand: failed on %s`, plus the command protocol tokens
+  `__connect__`, `XCMD`, `XPRT`, `XCLR[%8.8x]`, `%s!%s%s`, and
+  `Resuming debug session.` — all next to the `-dev` / `-retail` launch strings.
+- Source SDK 2013 still declares `ConVar_PublishToVXConsole()` in
+  `src/public/tier1/convar.h`, `ICVar::PublishToVXConsole()` in `icvar.h`,
+  `VXConsoleReportMode` in `tier0/vprof.h`, and VXConsole-specific stack
+  translation in `tier0/stacktools.h`.
+
+It is dormant on the normal retail boot (no `-dev`, and the title takes the
+empty command line), so it needs no hook here. The Halo 2 console code in the
+shared SDK is already compiled out for HL2 by the `HAS_console_*` guards and
+can be removed from that SDK later without touching this project.
