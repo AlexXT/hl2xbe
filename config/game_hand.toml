@@ -61,6 +61,7 @@ D3D_FvfShader = 0x0061FCA0
 # 0x61FC98; the game's draw loop at 0x45275D reads that same global.
 D3D_IndexData = 0x0061FC98
 
+
 # The two MMIO-like side effects of the XDK miniport, both measured from the
 # guest's own polling loops (see docs/FINDINGS.md). Without these the level
 # load spins forever at ~97%.
