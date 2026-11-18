@@ -25,3 +25,26 @@ D3D_BlockOnTime = ["eax", "stack"]
 
 # One-argument stdcall: the resource is passed in esi instead of on the stack.
 D3D_InternalRelease = ["esi"]
+
+# A nine-byte allocator thunk immediately after a pointer table, with no
+# padding: call 005BBBCE / add eax, 8 / ret. The linear sweep decoded past it,
+# so the guest's call trapped at "function was not decoded". Verified by
+# disassembling the bytes at 005BA637 in the XBE.
+[[function]]
+at = 0x005BA637
+end = 0x005BA640
+
+# D3D8I data globals the 5849 scan could not locate: this build is LTCG, so
+# the signature anchors do not match. Each address was recovered from HL2's own
+# code, not guessed (see docs/FINDINGS.md):
+#   61EDF0  ORed with 0x4800 (D3DDIRTYFLAG_TEXTURE)
+#   61EDF8  [state*4] read/written by every SetRenderState path
+#   61C730  [stage*32 + type]*4 texture stage state array
+#   61FDB8  stride-12 stream records; +8 is the vertex buffer field
+#   772FB8  [state*4] method passed to the pushbuffer writer at 60D250
+[data]
+D3D_DirtyFlags            = 0x0061EDF0
+D3D_RenderState           = 0x0061EDF8
+D3D_DeferredTextureState  = 0x0061C730
+D3D_Streams               = 0x0061FDB8
+D3D_SimpleRenderStateEncode = 0x00772FB8
