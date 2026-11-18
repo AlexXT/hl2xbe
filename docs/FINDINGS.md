@@ -79,3 +79,29 @@ links correctly. `build.bat` now prefers LLVM20.
 - Generated C: 128 split files; 17 unimplemented instruction kinds (mostly
   rare x87/3DNow!/protection forms), all counted by the recompiler.
 - `build.bat` builds `out\build\release\Game.exe` (~34 MB).
+
+## Content staging: the loader installs its own archives
+
+HL2's game XBE only opens `.xzp` archives; the disc ships `.xz_` (Microsoft
+XCompress/LZX). Rather than reimplement LZX, `default.xbe` was temporarily made
+the build's XBE and run under the same runtime. Its installer wrote:
+
+```
+hdd/Z/hl2/hl2x/zip0_xbox.xzp              434,653,523 bytes
+hdd/Z/hl2/hl2x/zip0_xbox_english.xzp      186,195,539 bytes
+hdd/Z/LoaderMedia/title_load.xmv
+hdd/Z/version_235.txt                     (the install marker)
+```
+
+The main archive's length matches the xCmp header's declared uncompressed size
+exactly. `xzp_verify.py` compared 390 duplicated files in `zip0_xbox.xzp` and 57
+in the English one: **all identical**, so the extraction is byte-correct. This
+is the console's own decompressor running as recompiled C.
+
+`GameInfo::images` maps `hl2_xbox.xbe` to the CMake target's exe name (`Game`);
+otherwise the loader's image switch looks for a nonexistent `hl2xbe.exe` and
+the handoff fails after the intro.
+
+A pure-Python LZX decoder from `sp00nznet/360tools` was also tried, but its
+XEX2 block framing does not match the xCmp payload; the recompiled loader is
+both more faithful and less work.
