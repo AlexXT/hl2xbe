@@ -59,5 +59,7 @@ void HL2ConsoleTick(X86Context& ctx, uint8_t* base) {
     }
     std::string cmd;
     while (app::TakeConsoleCommand(cmd)) RunCommand(ctx, base, cmd);
-    app::TakeConsoleOpen();  // HL2's console UI is engine-owned; command runs without it
+    // "Open display" on the F1 page runs HL2's own toggleconsole command through
+    // the same buffer, so the engine shows its real console window.
+    if (app::TakeConsoleOpen()) RunCommand(ctx, base, "toggleconsole");
 }

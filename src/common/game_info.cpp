@@ -1,5 +1,17 @@
 #include "app/app.h"
 
+static void Init() {
+    app::SetConsoleQuickCommands({
+        {"cheats on", "sv_cheats 1"},
+        {"impulse 101", "impulse 101"},
+        {"noclip", "noclip"},
+        {"god", "god"},
+        {"give health", "give health"},
+        {"main menu", "main_menu"},
+        {"version", "version"},
+    });
+}
+
 // what the runtime asks of the game; strings must be set, hooks may stay null
 const app::GameInfo app::kGame = {
     .title = L"Half-Life 2 (Xbox)",  // window and splash
@@ -13,7 +25,7 @@ const app::GameInfo app::kGame = {
     .options = {},                   // game settings kept in the settings file
     .load = nullptr,                 // reads more from the settings file's toml::table
     .save = nullptr,                 // writes more into it
-    .init = nullptr,                 // after the settings load, before the window and boot
+    .init = Init,                    // HL2 quick commands for the F1 Console page
     .loaded = nullptr,               // image in memory, before its entry point runs
     .window = nullptr,               // the game window is up
     .message = nullptr,              // window messages first; true takes one
