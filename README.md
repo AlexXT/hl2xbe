@@ -60,6 +60,14 @@ If you already have the pinned third-party sources cached locally, set
 $env:XBE_DEPS_CACHE = 'D:\mygame\deps-cache'
 ```
 
+## Screenshots
+
+Retail Xbox Half-Life 2, recompiled and running natively:
+
+![HL2 rooftops](docs/screenshots/rooftops-shotgun.png)
+
+![HL2 citadel](docs/screenshots/citadel-revolver.png)
+
 ## Credits
 
 - [Xbox XBE Recomp](https://github.com/AlexXT/XboxXBERecomp) — the recompiler
