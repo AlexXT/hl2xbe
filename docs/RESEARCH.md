@@ -77,15 +77,17 @@ Measured in this repository (`docs/FINDINGS.md` has the addresses and evidence):
    loops. It is not a code-generation problem anymore — it needs a host hook
    that behaves like the device. Here that took dynamic tracing, not guessing.
 
-5. **Frame cadence is another missing hardware fact.** Querying `fps_max` in the
-   F1 console returns `300` — the engine imposes no 30 FPS cap. The retail
-   console's cadence came from the display present interval, which the host
-   cannot read: `xdk/5849/signatures.toml` has `D3D_PresentInterval = {}`, so
-   `PresentVblanks()` falls back to 1 vblank = 60 FPS. Frame-time-dependent
-   Source code then runs at twice the intended cadence and shows artefacts;
-   setting host `fps_cap = 30` restores them to the console's timing and the
-   artefacts disappear. Recovering the present-interval global would let the
-   runtime derive 30 FPS by itself.
+5. **The visible artefacts are a texture-change-detection bug, not geometry.**
+   HUD font pages, ammo/health digits and particle sprites occasionally sample
+   corrupted data while the world geometry stays correct. `SurfaceSig` hashes
+   surfaces over 64 KB from just 64 × 64-byte samples — a few KB out of a
+   ~256 KB font page — so a single glyph write changes no sample and the stale
+   GPU texture is reused. Raising the whole-buffer threshold to 256 KB fixes
+   the detection. Frame rate modulates frequency (more frames, more chances to
+   catch a stale upload) but 30 FPS only reduces the glitches; it does not
+   eliminate them. Separately, `fps_max` reports `300` and the host cannot read
+   the title's present interval (`D3D_PresentInterval = {}`), so 60 FPS is an
+   assumption — worth recovering, but not the texture bug's cause.
 
 5. **Preservation payoff.** The deliverable is a self-contained native binary
    plus readable generated C and a documented set of recovered facts. No game

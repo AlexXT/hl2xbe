@@ -185,3 +185,14 @@ commands simply execute — but the F1 page is now a working command launcher.
 Earlier candidates (`0x001E226F`, `0x001ABBFD`) were rejected: the former takes
 an object pointer, the latter is a different helper. The string-reference trace
 was what found the real entry point.
+
+### HUD texture corruption
+
+Screenshots showed garbled HUD digits/subtitles and stretched particle sprites
+while geometry stayed correct — textured quads sampling stale bytes.
+`SurfaceSig` (`gpu/d3d_common.cpp`) hashes surfaces above `kSigWholeMax`
+(64 KB) from only 64 evenly spaced 64-byte samples. A font page is a few
+hundred KB, so a single glyph write changes none of the samples and the stale
+GPU texture is reused. Raising the threshold to 256 KB makes font pages hash
+whole. 30 FPS makes the glitches rarer but does not remove them, confirming a
+change-detection bug rather than a frame-rate problem.
