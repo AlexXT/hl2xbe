@@ -77,6 +77,16 @@ Measured in this repository (`docs/FINDINGS.md` has the addresses and evidence):
    loops. It is not a code-generation problem anymore — it needs a host hook
    that behaves like the device. Here that took dynamic tracing, not guessing.
 
+5. **Frame cadence is another missing hardware fact.** Querying `fps_max` in the
+   F1 console returns `300` — the engine imposes no 30 FPS cap. The retail
+   console's cadence came from the display present interval, which the host
+   cannot read: `xdk/5849/signatures.toml` has `D3D_PresentInterval = {}`, so
+   `PresentVblanks()` falls back to 1 vblank = 60 FPS. Frame-time-dependent
+   Source code then runs at twice the intended cadence and shows artefacts;
+   setting host `fps_cap = 30` restores them to the console's timing and the
+   artefacts disappear. Recovering the present-interval global would let the
+   runtime derive 30 FPS by itself.
+
 5. **Preservation payoff.** The deliverable is a self-contained native binary
    plus readable generated C and a documented set of recovered facts. No game
    data is committed; the ISO is supplied by the owner. The recompiled game also
