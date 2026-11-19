@@ -38,13 +38,21 @@ gives a built-in way to verify an extraction byte-for-byte.
 
 ## Status
 
-Early. Nothing has been run yet — the game files are still being acquired.
-The first gates, in order:
+Playable on Windows. Menus, level loading, weapons, HUD and Source console
+commands work, rendered through D3D12 (D3D11 fallback). The retail `.xz_`
+archives are decompressed by the loader's own LZX code offline, and the engine
+reads the resulting `.xzp` files; the loader is not recompiled.
 
-1. `xbe_symbols` names the XDK library for the game's build (XDK 1.0.5849).
-2. The lifted game reaches its engine loop (headless harness first).
-3. A first frame appears, and the D3D12 path is compared with the NV2A
-   pushbuffer that the retail title actually submits.
+Along the way (details in [docs/FINDINGS.md](docs/FINDINGS.md)):
+
+- `xbe_symbols` names the XDK library (1.0.5849) and recovers enough of the
+  D3D8 globals and ABI to drive rendering.
+- Hook at the miniport's MMIO side effects gets past the level-load stall.
+- The retail title has no visual console (VXConsole is an external debugger),
+  so the F1 panel runs commands through the engine's `Cbuf_AddText` and shows
+  captured console output.
+- A render-thread race caused occasional one-frame geometry warps; a per-game
+  flag now draws inline for HL2, which fixes it.
 
 ## Building
 
